@@ -1,3 +1,61 @@
 <resources>
-    <string name="app_name">StationMonitor</string>
+    <string name="app_name" translatable="false">StationMonitor</string>
+
+    <!-- Stations list -->
+    <string name="stations_title">Stations</string>
+    <plurals name="stations_count">
+        <item quantity="one">%d station</item>
+        <item quantity="other">%d stations</item>
+    </plurals>
+    <string name="list_summary_updated">%1$s · Updated %2$s</string>
+    <string name="loading_stations">Loading stations…</string>
+    <string name="stations_error_title">Couldn\'t load stations</string>
+    <string name="stations_empty_title">No stations yet</string>
+    <string name="stations_empty_body">There are no stations to show. Pull down to check again.</string>
+    <plurals name="device_count">
+        <item quantity="one">%d device</item>
+        <item quantity="other">%d devices</item>
+    </plurals>
+    <string name="device_count_none">No devices</string>
+    <string name="open_station">Open %1$s</string>
+
+    <!-- Station detail -->
+    <string name="station_fallback_title">Station</string>
+    <string name="devices_section">Devices</string>
+    <string name="loading_devices">Loading devices…</string>
+    <string name="devices_error_title">Couldn\'t load devices</string>
+    <string name="devices_empty_title">No devices yet</string>
+    <string name="devices_empty_body">This station has no registered devices. Pull down to check again.</string>
+    <string name="updated_at">Updated %1$s</string>
+    <string name="last_seen">Last seen %1$s</string>
+    <string name="never_seen">Never seen</string>
+    <string name="just_now">just now</string>
+
+    <!-- Device status and type -->
+    <string name="status_online">Online</string>
+    <string name="status_offline">Offline</string>
+    <string name="status_error">Error</string>
+    <string name="status_unknown">Unknown</string>
+    <string name="status_count">%1$d %2$s</string>
+    <string name="device_type_pos">Point of sale</string>
+    <string name="device_type_bos">Back-office server</string>
+    <string name="device_type_fcs">Forecourt server</string>
+    <string name="device_type_opt">Outdoor payment terminal</string>
+    <string name="device_type_unknown">Unknown device type</string>
+
+    <!-- Errors and offline state -->
+    <string name="error_no_connection">No internet connection.</string>
+    <string name="error_timeout">The server didn\'t respond in time.</string>
+    <string name="error_server">Server error (%1$d).</string>
+    <string name="error_unknown">Something went wrong.</string>
+    <string name="error_hint">Check your connection and try again.</string>
+    <string name="refresh_failed">Couldn\'t refresh. %1$s</string>
+    <string name="stale_title">Showing saved data</string>
+    <string name="stale_since">from %1$s</string>
+
+    <!-- Actions -->
+    <string name="action_retry">Retry</string>
+    <string name="action_try_again">Try again</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_back">Back</string>
 </resources>
