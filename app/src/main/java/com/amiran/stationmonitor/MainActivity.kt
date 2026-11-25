@@ -4,44 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.amiran.stationmonitor.ui.navigation.AppNavigation
 import com.amiran.stationmonitor.ui.theme.StationMonitorTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * The only Activity (single-activity architecture): every screen is a composable switched by
+ * Navigation 3. @AndroidEntryPoint lets Hilt inject ViewModels into the screens it hosts.
+ */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Draw behind the status and navigation bars; Scaffold adds the needed insets.
         enableEdgeToEdge()
         setContent {
             StationMonitorTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AppNavigation()
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    StationMonitorTheme {
-        Greeting("Android")
     }
 }
