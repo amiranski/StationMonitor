@@ -23,6 +23,12 @@
     </plurals>
     <string name="device_count_none">Bez zařízení</string>
     <string name="open_station">Otevřít %1$s</string>
+    <string name="stations_filtered_count">Zobrazeno %1$d z %2$d</string>
+
+    <!-- Search and filters -->
+    <string name="search_hint">Hledat podle názvu nebo adresy</string>
+    <string name="no_results_title">Žádné odpovídající stanice</string>
+    <string name="no_results_body">Zkuste jiný název nebo zrušte filtry.</string>
 
     <!-- Station detail -->
     <string name="station_fallback_title">Stanice</string>
@@ -63,4 +69,6 @@
     <string name="action_try_again">Zkusit znovu</string>
     <string name="action_refresh">Obnovit</string>
     <string name="action_back">Zpět</string>
+    <string name="action_clear_search">Vymazat hledání</string>
+    <string name="action_clear_filters">Zrušit filtry</string>
 </resources>

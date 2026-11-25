@@ -18,6 +18,12 @@
     </plurals>
     <string name="device_count_none">No devices</string>
     <string name="open_station">Open %1$s</string>
+    <string name="stations_filtered_count">Showing %1$d of %2$d</string>
+
+    <!-- Search and filters -->
+    <string name="search_hint">Search by name or address</string>
+    <string name="no_results_title">No matching stations</string>
+    <string name="no_results_body">Try a different name or clear the filters.</string>
 
     <!-- Station detail -->
     <string name="station_fallback_title">Station</string>
@@ -58,4 +64,6 @@
     <string name="action_try_again">Try again</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_back">Back</string>
+    <string name="action_clear_search">Clear search</string>
+    <string name="action_clear_filters">Clear filters</string>
 </resources>

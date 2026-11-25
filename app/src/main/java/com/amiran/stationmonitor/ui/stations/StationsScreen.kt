@@ -54,8 +54,13 @@ fun StationsRoute(
 ) {
     // Lifecycle-aware: stops collecting while the app is in the background.
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val query by viewModel.query.collectAsStateWithLifecycle()
     StationsScreen(
         state = state,
+        query = query,
+        onQueryChange = viewModel::onQueryChange,
+        onCountryToggle = viewModel::onCountryToggle,
+        onClearFilters = viewModel::clearFilters,
         onRefresh = viewModel::refresh,
         onStationClick = onStationClick,
         onErrorShown = viewModel::onErrorShown,
@@ -66,6 +71,10 @@ fun StationsRoute(
 @Composable
 fun StationsScreen(
     state: StationsUiState,
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onCountryToggle: (code: String) -> Unit,
+    onClearFilters: () -> Unit,
     onRefresh: () -> Unit,
     onStationClick: (stationId: String) -> Unit,
     onErrorShown: () -> Unit,
@@ -104,7 +113,7 @@ fun StationsScreen(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                item(key = "header") { StationsHeader(list) }
+                item(key = "header") { StationsHeader(list, isFiltered = state.filter.isActive, totalCount = state.totalCount) }
 
                 when (list) {
                     ListUiState.Loading -> {
@@ -115,6 +124,28 @@ fun StationsScreen(
                     is ListUiState.Content -> {
                         if (list.isStale) {
                             item(key = "stale") { StaleDataBanner(list.updatedAt) }
+                        }
+                        // Fixed keys keep the search field (and its keyboard focus) in place
+                        // while the rows below it change with every typed character.
+                        item(key = "search") { StationSearchField(query = query, onQueryChange = onQueryChange) }
+                        if (state.countries.size > 1) {
+                            item(key = "countries") {
+                                CountryFilterChips(countries = state.countries, onToggle = onCountryToggle)
+                            }
+                        }
+                        if (state.isNoResults) {
+                            item(key = "no_results") {
+                                FullScreenMessage(
+                                    icon = R.drawable.ic_search,
+                                    iconTint = MaterialTheme.colorScheme.primary,
+                                    iconBackground = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    title = stringResource(R.string.no_results_title),
+                                    body = stringResource(R.string.no_results_body),
+                                    actionLabel = stringResource(R.string.action_clear_filters),
+                                    onAction = onClearFilters,
+                                    actionStyle = MessageActionStyle.Secondary,
+                                )
+                            }
                         }
                         // key = stable id: Compose can keep each row's state and animate
                         // changes instead of redrawing the whole list.
@@ -156,7 +187,7 @@ fun StationsScreen(
 }
 
 @Composable
-private fun StationsHeader(list: ListUiState<Station>) {
+private fun StationsHeader(list: ListUiState<Station>, isFiltered: Boolean, totalCount: Int) {
     Column(
         modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 24.dp, bottom = 6.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -170,7 +201,12 @@ private fun StationsHeader(list: ListUiState<Station>) {
         val subtitle = when (list) {
             ListUiState.Loading -> stringResource(R.string.loading_stations)
             is ListUiState.Content -> {
-                val count = pluralStringResource(R.plurals.stations_count, list.items.size, list.items.size)
+                val shown = list.items.size
+                val count = if (isFiltered) {
+                    stringResource(R.string.stations_filtered_count, shown, totalCount)
+                } else {
+                    pluralStringResource(R.plurals.stations_count, shown, shown)
+                }
                 list.updatedAt?.let { stringResource(R.string.list_summary_updated, count, formatUpdatedAt(it)) } ?: count
             }
             else -> null
@@ -199,7 +235,38 @@ private fun StationsContentPreview() {
         StationsScreen(
             state = StationsUiState(
                 list = ListUiState.Content(previewStations, Instant.now(), isRefreshing = false, isStale = true),
+                countries = previewStations.countryOptions(selected = emptySet()),
+                totalCount = previewStations.size,
             ),
+            query = "",
+            onQueryChange = {},
+            onCountryToggle = {},
+            onClearFilters = {},
+            onRefresh = {},
+            onStationClick = {},
+            onErrorShown = {},
+        )
+    }
+}
+
+@Preview(name = "Filtered, no results")
+@Composable
+private fun StationsNoResultsPreview() {
+    val filter = StationFilter(query = "brno", countries = setOf("SK"))
+    StationMonitorTheme {
+        StationsScreen(
+            state = StationsUiState(
+                list = ListUiState.Content(
+                    previewStations.matching(filter), Instant.now(), isRefreshing = false, isStale = false,
+                ),
+                filter = filter,
+                countries = previewStations.countryOptions(selected = filter.countries),
+                totalCount = previewStations.size,
+            ),
+            query = filter.query,
+            onQueryChange = {},
+            onCountryToggle = {},
+            onClearFilters = {},
             onRefresh = {},
             onStationClick = {},
             onErrorShown = {},
@@ -211,7 +278,16 @@ private fun StationsContentPreview() {
 @Composable
 private fun StationsLoadingPreview() {
     StationMonitorTheme {
-        StationsScreen(StationsUiState(ListUiState.Loading), onRefresh = {}, onStationClick = {}, onErrorShown = {})
+        StationsScreen(
+            state = StationsUiState(ListUiState.Loading),
+            query = "",
+            onQueryChange = {},
+            onCountryToggle = {},
+            onClearFilters = {},
+            onRefresh = {},
+            onStationClick = {},
+            onErrorShown = {},
+        )
     }
 }
 
@@ -221,6 +297,10 @@ private fun StationsErrorPreview() {
     StationMonitorTheme {
         StationsScreen(
             state = StationsUiState(ListUiState.Error(DataError.Server(503), isRetrying = false)),
+            query = "",
+            onQueryChange = {},
+            onCountryToggle = {},
+            onClearFilters = {},
             onRefresh = {},
             onStationClick = {},
             onErrorShown = {},

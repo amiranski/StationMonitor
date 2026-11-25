@@ -70,10 +70,11 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // Lifecycle: ViewModel, lifecycle-aware Flow collection
+    // Lifecycle: ViewModel, SavedStateHandle, lifecycle-aware Flow collection
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
 
     // Navigation 3 (+ a ViewModel store per back stack entry)
     implementation(libs.androidx.navigation3.runtime)

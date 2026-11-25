@@ -1,8 +1,10 @@
 package com.amiran.stationmonitor.ui.stations
 
+import androidx.lifecycle.SavedStateHandle
 import com.amiran.stationmonitor.domain.model.CachedData
 import com.amiran.stationmonitor.domain.model.DataError
 import com.amiran.stationmonitor.domain.model.RefreshResult
+import com.amiran.stationmonitor.domain.model.Station
 import com.amiran.stationmonitor.testutil.FIXED_NOW
 import com.amiran.stationmonitor.testutil.FakeStationRepository
 import com.amiran.stationmonitor.testutil.MainDispatcherRule
@@ -14,6 +16,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -28,8 +31,10 @@ class StationsViewModelTest {
     private val repository = FakeStationRepository()
 
     /** uiState uses WhileSubscribed, so a test has to collect it to make it produce values. */
-    private fun TestScope.createViewModel(): StationsViewModel {
-        val viewModel = StationsViewModel(repository)
+    private fun TestScope.createViewModel(
+        savedStateHandle: SavedStateHandle = SavedStateHandle(),
+    ): StationsViewModel {
+        val viewModel = StationsViewModel(repository, savedStateHandle)
         backgroundScope.launch(mainDispatcherRule.dispatcher) { viewModel.uiState.collect {} }
         advanceUntilIdle()
         return viewModel
@@ -110,5 +115,72 @@ class StationsViewModelTest {
 
         assertTrue(viewModel.uiState.value.list is ListUiState.Content)
         assertEquals(2, repository.refreshCalls)
+    }
+
+    private val brno = Station("b", "Brno – Královo Pole", "Palackého 12, Brno", "CZ", 4)
+    private val zlin = Station("z", "Zlín – Nová stanice", "třída Tomáše Bati 5, Zlín", "CZ", 0)
+    private val petrzalka = Station("p", "Bratislava – Petržalka", "Panónska cesta 2", "SK", 4)
+
+    private fun TestScope.loadedViewModel(savedStateHandle: SavedStateHandle = SavedStateHandle()): StationsViewModel {
+        repository.stations.value = CachedData(listOf(brno, zlin, petrzalka), FIXED_NOW)
+        val viewModel = createViewModel(savedStateHandle)
+        repository.completeRefresh(RefreshResult.Success)
+        advanceUntilIdle()
+        return viewModel
+    }
+
+    private fun StationsViewModel.visibleIds() =
+        (uiState.value.list as ListUiState.Content).items.map { it.id }
+
+    @Test
+    fun `search and country filter narrow the list, counts stay for the whole cache`() = runTest {
+        val viewModel = loadedViewModel()
+
+        viewModel.onQueryChange("zlin")
+        advanceUntilIdle()
+        assertEquals(listOf("z"), viewModel.visibleIds())
+        assertEquals("zlin", viewModel.query.value)
+
+        viewModel.onQueryChange("")
+        viewModel.onCountryToggle("SK")
+        advanceUntilIdle()
+        val state = viewModel.uiState.value
+        assertEquals(listOf("p"), viewModel.visibleIds())
+        assertEquals(3, state.totalCount)
+        assertEquals(
+            listOf(CountryOption("CZ", 2, isSelected = false), CountryOption("SK", 1, isSelected = true)),
+            state.countries,
+        )
+
+        viewModel.onCountryToggle("SK")
+        advanceUntilIdle()
+        assertEquals(listOf("b", "z", "p"), viewModel.visibleIds())
+    }
+
+    @Test
+    fun `filter matching nothing shows no results until the filters are cleared`() = runTest {
+        val viewModel = loadedViewModel()
+
+        viewModel.onQueryChange("praha")
+        viewModel.onCountryToggle("SK")
+        advanceUntilIdle()
+        assertTrue(viewModel.uiState.value.isNoResults)
+
+        viewModel.clearFilters()
+        advanceUntilIdle()
+        assertFalse(viewModel.uiState.value.isNoResults)
+        assertFalse(viewModel.uiState.value.filter.isActive)
+        assertEquals("", viewModel.query.value)
+        assertEquals(3, viewModel.visibleIds().size)
+    }
+
+    @Test
+    fun `filter is restored from saved state after process death`() = runTest {
+        val restored = SavedStateHandle(mapOf("query" to "brno", "countries" to arrayListOf("CZ")))
+
+        val viewModel = loadedViewModel(restored)
+
+        assertEquals("brno", viewModel.query.value)
+        assertEquals(listOf("b"), viewModel.visibleIds())
     }
 }
