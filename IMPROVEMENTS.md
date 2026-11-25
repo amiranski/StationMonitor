@@ -39,14 +39,15 @@ a smoke test of the minified APK. Add baseline profiles for faster startup and s
 **Why:** R8 shrinks and obfuscates the app, but reflection-like code (serializers, Retrofit
 proxies) can break silently only in release builds.
 
-## 5. Search and filtering
+## 5. Search at scale
 
-**What:** Search by station name or address, filter by country, and a "stations with problems
-only" filter on the list.
+**What:** Search and the country filter are already in the app and run in memory. With thousands
+of stations, move them to a Room FTS (full-text search) table with a diacritics-free column, or
+to a server-side search endpoint with paging.
 
-**Why:** The API returns 147 stations in 6 countries. An operator usually looks for one station
-or for the ones that need attention. Filtering in Room with a query is cheap and also works
-offline.
+**Why:** In-memory filtering is the simplest correct solution for 147 stations and needs no
+changes in the data layer, but it loads the whole list into memory and scans it on every
+keystroke.
 
 ## 6. Problems overview on the stations list
 
@@ -99,4 +100,8 @@ valuable as features and the team grow: faster incremental builds and enforced l
   the user cannot re-download.
 - Accessibility pass with TalkBack and large font sizes; content descriptions are already in
   place for icon buttons.
-- More languages (Slovak, Polish, German, Hungarian — the countries in the data).
+- More languages (Slovak, Polish, German, Hungarian — the countries in the data). Thanks to
+  `generateLocaleConfig`, a new `values-xx` folder is enough to appear in the system language
+  settings.
+- In-app language switch for Android 8–12 (AppCompat `setApplicationLocales`); Android 13+
+  already gets the per-app language in system settings.

@@ -6,7 +6,8 @@ backend, and a local cache so the app also works offline.
 
 **Features**
 
-- Stations list: name, country, address, device count; pull to refresh.
+- Stations list: name, country, address, device count; pull to refresh; search by name or
+  address (ignores case and diacritics: "zlin" finds "Zlín") and filter by country.
 - Station detail (separate screen via Navigation 3): devices sorted problems first, status
   summary, device type, relative "last seen" time.
 - Offline-first cache in Room: data from the last successful download is shown immediately and
@@ -14,6 +15,9 @@ backend, and a local cache so the app also works offline.
 - Every state handled: first load, network/server error without cache, empty list, refresh
   failure with cache (Snackbar + Retry), refreshing.
 - Light and dark theme, English and Czech.
+
+**Switching to Czech:** the app follows the phone language. To try Czech without changing the
+whole phone (Android 13+): Settings → Apps → StationMonitor → Language → Čeština.
 
 ## Running the app
 
@@ -47,7 +51,7 @@ com.amiran.stationmonitor
 └── ui
     ├── common    ListUiState, RefreshTracker, formatting
     ├── components shared composables (status pill, badges, banners, full-screen messages)
-    ├── stations  stations screen + ViewModel
+    ├── stations  stations screen + ViewModel, search and country filter
     ├── devices   station detail screen + ViewModel
     ├── navigation Navigation 3 setup
     └── theme     colors, typography (Nunito Sans), Material 3 theme
@@ -111,7 +115,8 @@ indicator before the error is shown.
 | UI events as state | The refresh error for the Snackbar is part of the UI state and is cleared after it is shown, so it survives rotation and is not shown twice. |
 | Devices sorted problems first | An operator opening a station wants to see what is broken without scrolling. |
 | Brand look | Colors, outlined badges and typography follow the company's existing app; Material 3 components underneath. Light and dark theme. |
-| English + Czech | UI strings are resources with an English default and a Czech translation (including Czech plural forms). |
+| English + Czech | UI strings are resources with an English default and a Czech translation (including Czech plural forms). English stays the fallback because the stations are in 6 countries; Czech phones get Czech automatically, and Android 13+ users can pick the app language in system settings (`generateLocaleConfig`). |
+| Search in memory | The ViewModel filters the cached list (147 stations, well under a millisecond). SQLite `LIKE` cannot ignore diacritics, and the data layer stays untouched. The query is kept in `SavedStateHandle`, so it survives process death. |
 
 ## Tests
 
@@ -120,7 +125,8 @@ JVM unit tests (`app/src/test`), no emulator needed:
 - `OfflineFirstStationRepositoryTest` — caching, server order, retries, failure keeps cache, removal of stale stations/devices
 - `RetryPolicyTest` — retry budgets per failure type, backoff timing (virtual time), error mapping
 - `ListUiStateTest` — every combination of cache state × refresh state
-- `StationsViewModelTest`, `DevicesViewModelTest` — state transitions, no parallel refreshes, Snackbar shown once, sorting and summary
+- `StationsViewModelTest`, `DevicesViewModelTest` — state transitions, no parallel refreshes, Snackbar shown once, filters and their restore after process death, sorting and summary
+- `StationFilterTest` — search ignoring case and diacritics, multi-word queries, country filter, chip counts
 - `MappersTest`, `DeviceModelTest` — parsing of unknown values, null/invalid timestamps, special characters
 
 The tests use hand-written fakes (an in-memory API and DAOs extending the real abstract DAOs)
