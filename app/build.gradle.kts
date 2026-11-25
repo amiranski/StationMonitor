@@ -43,6 +43,16 @@ android {
         compose = true
         buildConfig = true
     }
+    androidResources {
+        // Lists the app's languages (from res/values-*) in Android 13+ Settings > Apps >
+        // StationMonitor > Language, so Czech can be chosen for this app only.
+        // The default language is declared in res/resources.properties.
+        generateLocaleConfig = true
+        // Ship only the languages the app is translated to. Libraries bring dozens of
+        // translations; without this filter a German phone would show a mix of English app
+        // texts and German library texts.
+        localeFilters += setOf("en", "cs")
+    }
 }
 
 room {
