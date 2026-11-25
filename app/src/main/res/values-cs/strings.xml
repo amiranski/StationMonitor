@@ -1,0 +1,66 @@
+<resources>
+    <!-- Czech translation. Android picks this file automatically when the phone is set to Czech. -->
+
+    <!-- Stations list -->
+    <string name="stations_title">Stanice</string>
+    <!-- Czech has more plural forms than English: 1 stanice, 2–4 stanice, 5+ stanic. -->
+    <plurals name="stations_count">
+        <item quantity="one">%d stanice</item>
+        <item quantity="few">%d stanice</item>
+        <item quantity="many">%d stanice</item>
+        <item quantity="other">%d stanic</item>
+    </plurals>
+    <string name="list_summary_updated">%1$s · aktualizováno %2$s</string>
+    <string name="loading_stations">Načítání stanic…</string>
+    <string name="stations_error_title">Stanice se nepodařilo načíst</string>
+    <string name="stations_empty_title">Zatím žádné stanice</string>
+    <string name="stations_empty_body">Nejsou k dispozici žádné stanice. Stáhněte obrazovku dolů pro obnovení.</string>
+    <plurals name="device_count">
+        <item quantity="one">%d zařízení</item>
+        <item quantity="few">%d zařízení</item>
+        <item quantity="many">%d zařízení</item>
+        <item quantity="other">%d zařízení</item>
+    </plurals>
+    <string name="device_count_none">Bez zařízení</string>
+    <string name="open_station">Otevřít %1$s</string>
+
+    <!-- Station detail -->
+    <string name="station_fallback_title">Stanice</string>
+    <string name="devices_section">Zařízení</string>
+    <string name="loading_devices">Načítání zařízení…</string>
+    <string name="devices_error_title">Zařízení se nepodařilo načíst</string>
+    <string name="devices_empty_title">Žádná zařízení</string>
+    <string name="devices_empty_body">Tato stanice nemá žádná registrovaná zařízení. Stáhněte obrazovku dolů pro obnovení.</string>
+    <string name="updated_at">Aktualizováno %1$s</string>
+    <string name="last_seen">Naposledy %1$s</string>
+    <string name="never_seen">Nikdy nepřipojeno</string>
+    <string name="just_now">právě teď</string>
+
+    <!-- Device status and type -->
+    <string name="status_online">Online</string>
+    <string name="status_offline">Offline</string>
+    <string name="status_error">Chyba</string>
+    <string name="status_unknown">Neznámý</string>
+    <string name="status_count">%2$s: %1$d</string>
+    <string name="device_type_pos">Pokladna</string>
+    <string name="device_type_bos">Back-office server</string>
+    <string name="device_type_fcs">Řídicí server stojanů</string>
+    <string name="device_type_opt">Venkovní platební terminál</string>
+    <string name="device_type_unknown">Neznámý typ zařízení</string>
+
+    <!-- Errors and offline state -->
+    <string name="error_no_connection">Bez připojení k internetu.</string>
+    <string name="error_timeout">Server neodpověděl včas.</string>
+    <string name="error_server">Chyba serveru (%1$d).</string>
+    <string name="error_unknown">Něco se pokazilo.</string>
+    <string name="error_hint">Zkontrolujte připojení a zkuste to znovu.</string>
+    <string name="refresh_failed">Obnovení se nezdařilo. %1$s</string>
+    <string name="stale_title">Zobrazena uložená data</string>
+    <string name="stale_since">z %1$s</string>
+
+    <!-- Actions -->
+    <string name="action_retry">Zkusit znovu</string>
+    <string name="action_try_again">Zkusit znovu</string>
+    <string name="action_refresh">Obnovit</string>
+    <string name="action_back">Zpět</string>
+</resources>
