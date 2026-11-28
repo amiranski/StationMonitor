@@ -21,8 +21,11 @@ whole phone (Android 13+): Settings → Apps → StationMonitor → Language →
 
 ## Running the app
 
-Requirements: Android Studio (latest stable), JDK is bundled with it. Nothing else to configure:
-the API URL is public and there is no login.
+Requirements: an Android Studio version that supports Android Gradle plugin 9.5 (the stable
+release from late 2026). An older Android Studio cannot sync the project: update it, or build from
+the command line below, which only needs the Android SDK (Gradle downloads the JDK it needs by
+itself, see `gradle/gradle-daemon-jvm.properties`). On the first sync Android Studio may ask to
+install SDK Platform 37.2. Nothing else to configure: the API URL is public and there is no login.
 
 1. Open the project in Android Studio and let Gradle sync.
 2. Run the `app` configuration on an emulator or a device with Android 8.0 (API 26) or newer.
